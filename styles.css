@@ -1,11 +1,24 @@
 .gold-mined {
-    color: red;
+    color: goldenrod;
   }
 
   body { /* no . means element type */
     text-align: center; /* text-align centers text AND children */
+    background-color: #36454F;
+    color: whitesmoke;
+    font-family: Arial
   }
 
-  * { /* * applies to all elements, use with caution */
-    outline: none;
+  button { /* * applies to all elements, use with caution */
+    background-color: #136499;
+    border: none;
+    color: whitesmoke;
+    padding: 16px 32px;
+    text-align: center;
+    font-size: 16px;
+    margin: 4px 2px;
+    opacity: 1;
+    transition: 0.3s;
   }
+
+  button:hover {opacity: 0.6}

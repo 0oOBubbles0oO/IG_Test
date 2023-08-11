@@ -3,14 +3,20 @@ var gameData = {
   gold: 0,
   goldPerClick: 1,
   goldPerClickCost: 10,
-  lastTick: Date.now()
+  goldCostGrowth: 1.07,
+  goldMultiplier: 1,
+  lastTick: Date.now(),
+  prestigeGold: 100
 }
 
 if (saveGame !== null) {
   if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
   if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
   if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
+  if (typeof saveGame.goldCostGrowth !== "undefined") gameData.goldCostGrowth = saveGame.goldCostGrowth;
+  if (typeof saveGame.goldMultiplier !== "undefined") gameData.goldMultiplier = saveGame.goldMultiplier;
   if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
+  if (typeof saveGame.prestigeGold !== "undefined") gameData.prestigeGold = saveGame.prestigeGold;
 }
 
 function tab(tab) {
@@ -19,41 +25,83 @@ function tab(tab) {
   document.getElementById("shopMenu").style.display = "none"
   document.getElementById(tab).style.display = "inline-block"
 }
-// go to a tab for the first time, so not all show
-tab("mineGoldMenu")
+
+function initialize() {
+  tab("mineGoldMenu") // go to a tab for the first time, so not all show
+  today = new Date(gameData.lastTick);
+  update("saveTime", "Last Save: " + today.toLocaleString())
+  update("prestigeStats", "Gold Multiplier: " + format(gameData.goldMultiplier) + ", Prestige Goal: " + format(gameData.prestigeGold))
+  update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick) + ") Cost: " + format(gameData.goldPerClickCost) + " Gold")
+  update("goldMined", format(gameData.gold) + " Gold Mined")
+}
+
+initialize()
+
+function resetGameAll() {
+  gameData.gold = 0
+  gameData.goldPerClick = 1
+  gameData.goldPerClickCost = 10
+  gameData.goldMultiplier = 1
+  gameData.prestigeGold = 100
+  update("prestigeStats", "Gold Multiplier: " + format(gameData.goldMultiplier) + ", Prestige Goal: " + format(gameData.prestigeGold))
+  update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick) + ") Cost: " + format(gameData.goldPerClickCost) + " Gold")
+  update("goldMined", format(gameData.gold) + " Gold Mined")
+}
+
+function resetGamePrestige() {
+  if (gameData.gold >= gameData.prestigeGold) {
+    prestigeFactor = (1 + gameData.gold/gameData.prestigeGold)
+    gameData.goldMultiplier *= prestigeFactor
+    gameData.gold = 0
+    gameData.goldPerClick = gameData.goldMultiplier
+    gameData.goldPerClickCost = 10
+    gameData.prestigeGold *= prestigeFactor * gameData.goldCostGrowth
+    update("prestigeStats", "Gold Multiplier: " + format(gameData.goldMultiplier) + ", Prestige Goal: " + format(gameData.prestigeGold))
+    update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick) + ") Cost: " + format(gameData.goldPerClickCost) + " Gold")
+    update("goldMined", format(gameData.gold) + " Gold Mined")
+  }
+}
 
 function update(id, content) {
   document.getElementById(id).innerHTML = content;
 }
 
 function mineGold() {
-  gameData.gold += gameData.goldPerClick
-  update("goldMined", format(gameData.gold, "scientific") + " Gold Mined")
+  gameData.gold += gameData.goldPerClick * gameData.goldMultiplier
+  update("goldMined", format(gameData.gold) + " Gold Mined")
 }
 
 function buyGoldPerClick() {
   if (gameData.gold >= gameData.goldPerClickCost) {
     gameData.gold -= gameData.goldPerClickCost
-    gameData.goldPerClick += 1
-    gameData.goldPerClickCost *= 2
-    update("goldMined", format(gameData.gold, "scientific") + " Gold Mined")
-    update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick, "scientific") + ") Cost: " + format(gameData.goldPerClickCost, "scientific") + " Gold")
+    gameData.goldPerClick += gameData.goldMultiplier
+    gameData.goldPerClickCost *= gameData.goldCostGrowth
+    update("goldMined", format(gameData.gold) + " Gold Mined")
+    update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick) + ") Cost: " + format(gameData.goldPerClickCost) + " Gold")
   }
+}
+
+function saveGameClick() {
+  localStorage.setItem('goldMinerSave', JSON.stringify(gameData))
+  timeElapsed = Date.now();
+  today = new Date(timeElapsed);
+  update("saveTime", "Last Save: " + today.toLocaleString())
 }
 
 var mainGameLoop = window.setInterval(function() {
   diff = Date.now() - gameData.lastTick;
   gameData.lastTick = Date.now()
   gameData.gold += gameData.goldPerClick * (diff / 1000)
-  update("goldMined", format(gameData.gold, "scientific") + " Gold Mined")
-  update("perClickUpgrade", "Upgrade Pickaxe (Currently Level " + format(gameData.goldPerClick, "scientific") + ") Cost: " + format(gameData.goldPerClickCost, "scientific") + " Gold")
-}, 1000)
+  update("goldMined", format(gameData.gold) + " Gold Mined")
+}, 500)
 
 var saveGameLoop = window.setInterval(function() {
-  localStorage.setItem('goldMinerSave', JSON.stringify(gameData))
+  saveGameClick()
 }, 15000)
 
-function format(number, type) {
+
+function format(number, type = "standard") {
+  if (type == "standard") return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1, minimumFractionDigits: 1}).format(number)
 	let exponent = Math.floor(Math.log10(number))
 	let mantissa = number / Math.pow(10, exponent)
 	if (exponent < 3) return number.toFixed(1)

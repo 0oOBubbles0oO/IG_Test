@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <button onclick="saveGameClick()">Save Game (Auto-saves every 15s)</button>
+    <button onclick="resetGameAll()">Reset Game (Erases save)</button>
+    <p id="saveTime">Last Save:</p>
+    <button onclick="resetGamePrestige()">Presitge (Reset gold and upgrades)</button>
+    <p id="prestigeStats">Gold Multiplier: 1, Prestige Goal: 100</p>
     <p id="goldMined" class="gold-mined">0 Gold Mined</p>
     <div id="navigateButtons">
       <button onclick="tab('mineGoldMenu')">Go to Mine Gold</button>
