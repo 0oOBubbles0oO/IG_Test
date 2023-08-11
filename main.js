@@ -1,9 +1,16 @@
-var saveGame = localStorage.getItem('goldMinerSave')
+var saveGame = JSON.parse(localStorage.getItem("goldMinerSave"))
 var gameData = {
   gold: 0,
   goldPerClick: 1,
   goldPerClickCost: 10,
   lastTick: Date.now()
+}
+
+if (savegame !== null) {
+  if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
+  if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
+  if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
+  if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
 }
 
 function tab(tab) {
@@ -53,8 +60,3 @@ function format(number, type) {
 	if (type == "scientific") return mantissa.toFixed(2) + "e" + exponent
 	if (type == "engineering") return (Math.pow(10, exponent % 3) * mantissa).toFixed(2) + "e" + (Math.floor(exponent / 3) * 3)
 }
-
-if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
-if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
-if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
-if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
