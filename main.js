@@ -6,10 +6,12 @@ var gameData = {
   lastTick: Date.now()
 }
 
-if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
-if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
-if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
-if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
+if (savegame !== null) {
+  if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
+  if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
+  if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
+  if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
+}
 
 function tab(tab) {
   // hide all your tabs, then show the one the user selected.
