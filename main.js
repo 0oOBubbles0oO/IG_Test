@@ -6,13 +6,6 @@ var gameData = {
   lastTick: Date.now()
 }
 
-if (saveGame !== null) {
-  if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
-  if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
-  if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
-  if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
-}
-
 function tab(tab) {
   // hide all your tabs, then show the one the user selected.
   document.getElementById("mineGoldMenu").style.display = "none"
@@ -60,3 +53,8 @@ function format(number, type) {
 	if (type == "scientific") return mantissa.toFixed(2) + "e" + exponent
 	if (type == "engineering") return (Math.pow(10, exponent % 3) * mantissa).toFixed(2) + "e" + (Math.floor(exponent / 3) * 3)
 }
+
+if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
+if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
+if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
+if (typeof saveGame.lastTick !== "undefined") gameData.lastTick = saveGame.lastTick;
