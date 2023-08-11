@@ -6,7 +6,7 @@ var gameData = {
   lastTick: Date.now()
 }
 
-if (savegame !== null) {
+if (saveGame !== null) {
   if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
   if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
   if (typeof saveGame.goldPerClickCost !== "undefined") gameData.goldPerClickCost = saveGame.goldPerClickCost;
