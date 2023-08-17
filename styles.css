@@ -6,7 +6,7 @@
     text-align: center; /* text-align centers text AND children */
     background-color: #36454F;
     color: whitesmoke;
-    font-family: Arial
+    font-family: Arial;
   }
 
   button { /* * applies to all elements, use with caution */
@@ -21,4 +21,6 @@
     transition: 0.3s;
   }
 
-  button:hover {opacity: 0.6}
+  button:active {
+    opacity: 0.6;
+    box-shadow: 2px 2px 5px #fc894d;}

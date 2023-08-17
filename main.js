@@ -9,6 +9,189 @@ var gameData = {
   prestigeGold: 100
 }
 
+var numberConverter = {
+    short: [
+      "",
+      "K",
+      "M",
+      "B",
+      "T",
+      "Qa",
+      "Qi",
+      "Sx",
+      "Sp",
+      "Oc",
+      "No",
+      "Dc",
+      "UDc",
+      "DDc",
+      "TDc",
+      "QaDc",
+      "QiDc",
+      "SxDc",
+      "SpDc",
+      "ODc",
+      "NDc",
+      "Vi",
+      "UVi",
+      "DVi",
+      "TVi",
+      "QaVi",
+      "QiVi",
+      "SxVi",
+      "SpVi",
+      "OVi",
+      "NVi",
+      "Tg",
+      "UTg",
+      "DTg",
+      "TTg",
+      "QaTg",
+      "QiTg",
+      "SxTg",
+      "SpTg",
+      "OTg",
+      "NTg",
+      "Qd",
+      "UQd",
+      "DQd",
+      "TQd",
+      "QaQd",
+      "QiQd",
+      "SxQd",
+      "SpQd",
+      "OQd",
+      "NQd",
+      "Qq",
+      "UQq",
+      "DQq",
+      "TQq",
+      "QaQq",
+      "QiQq",
+      "SxQq",
+      "SpQq",
+      "OQq",
+      "NQq",
+      "Sg",
+      "USg",
+      "DSg",
+      "TSg",
+      "QaSg",
+      "QiSg",
+      "SxSg",
+      "SpSg",
+      "OSg",
+      "NSg",
+      "St",
+      "USt",
+      "DSt",
+      "TSt",
+      "QaSt",
+      "QiSt",
+      "SxSt",
+      "SpSt",
+      "OSt",
+      "NSt",
+      "Og",
+      "UOg",
+      "DOg",
+      "TOg",
+      "QaOg",
+      "QiOg",
+      "SxOg",
+      "SpOg",
+      "OOg",
+      "NOg"
+    ],
+    full: [
+      "",
+      " thousand",
+      " million",
+      " billion",
+      " trillion",
+      " quadrillion",
+      " quintillion",
+      " sextillion",
+      " septillion",
+      " octillion",
+      " nonillion",
+      " decillion",
+      " undecillion",
+      " duodecillion",
+      " tredecillion",
+      " quattuordecillion",
+      " quinquadecillion",
+      " sedecillion",
+      " septendecillion",
+      " octodecillion",
+      " novendecillion",
+      " vigintillion",
+      " unvigintillion",
+      " duovigintillion",
+      " tresvigintillion",
+      " quattuorvigintillion",
+      " quinquavigintillion",
+      " sesvigintillion",
+      " septemvigintillion",
+      " octovigintillion",
+      " novemvigintillion",
+      " trigintillion",
+      " untrigintillion",
+      " duotrigintillion",
+      " trestrigintillion",
+      " quattuortrigintillion",
+      " quinquatrigintillion",
+      " sestrigintillion",
+      " septentrigintillion",
+      " octotrigintillion",
+      " noventrigintillion",
+      " quadragintillion",
+      " unquadragintillion",
+      " duoquadragintillion",
+      " tresquadragintillion",
+      " quattuorquadragintillion",
+      " quinquaquadragintillion",
+      " sesquadragintillion",
+      " septenquadragintillion",
+      " octoquadragintillion",
+      " novenquadragintillion",
+      " quinquagintillion",
+      " unquinquagintillion",
+      " duoquinquagintillion",
+      " tresquinquagintillion",
+      " quattuorquinquagintillion",
+      " quinquaquinquagintillion",
+      " sesquinquagintillion",
+      " septenquinquagintillion",
+      " octoquinquagintillion",
+      " novenquinquagintillion",
+      " sexagintillion",
+      " unsexagintillion",
+      " duosexagintillion",
+      " tresexagintillion",
+      " quattuorsexagintillion",
+      " quinquasexagintillion",
+      " sesexagintillion",
+      " septensexagintillion",
+      " octosexagintillion",
+      " novensexagintillion",
+      " septuagintillion",
+      " unseptuagintillion",
+      " duoseptuagintillion",
+      " treseptuagintillion",
+      " quattuorseptuagintillion",
+      " quinquaseptuagintillion",
+      " seseptuagintillion",
+      " septenseptuagintillion",
+      " octoseptuagintillion",
+      " novenseptuagintillion",
+      " octogintillion",
+      " unoctogintillion",
+      " duooctogintillion"
+    ]
+  };
+  
+
 if (saveGame !== null) {
   if (typeof saveGame.gold !== "undefined") gameData.gold = saveGame.gold;
   if (typeof saveGame.goldPerClick !== "undefined") gameData.goldPerClick = saveGame.goldPerClick;
@@ -67,7 +250,7 @@ function update(id, content) {
 }
 
 function mineGold() {
-  gameData.gold += gameData.goldPerClick * gameData.goldMultiplier
+  gameData.gold += gameData.goldPerClick
   update("goldMined", format(gameData.gold) + " Gold Mined")
 }
 
@@ -100,11 +283,34 @@ var saveGameLoop = window.setInterval(function() {
 }, 15000)
 
 
+function abbreviateNumber(number, type = "short"){
+  var SI_SYMBOL = numberConverter[type]
+  // what tier? (determines SI symbol)
+  var tier = Math.log10(Math.abs(number)) / 3 | 0;
+
+  // if zero, we don't need a suffix
+  if(number < 0.1 && number > -0.1) return number.toFixed(1);
+
+  // get suffix and determine scale
+  var suffix = SI_SYMBOL[tier];
+  var scale = Math.pow(10, tier * 3);
+
+  // scale the number
+  var scaled = number / scale;
+
+  // format number and add suffix
+  return scaled.toFixed(1) + suffix;
+}
+
 function format(number, type = "standard") {
-  if (type == "standard") return Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1, minimumFractionDigits: 1}).format(number)
-	let exponent = Math.floor(Math.log10(number))
+  let exponent = Math.floor(Math.log10(number))
 	let mantissa = number / Math.pow(10, exponent)
+  exponentLimit = 15
+  if (type == "short" || type == "full") return abbreviateNumber(number, type)
+  if (type == "standard" && exponent > exponentLimit) return abbreviateNumber(number, "full")
+  if (type == "standard" && exponent <= exponentLimit) return abbreviateNumber(number, "short")
 	if (exponent < 3) return number.toFixed(1)
 	if (type == "scientific") return mantissa.toFixed(2) + "e" + exponent
 	if (type == "engineering") return (Math.pow(10, exponent % 3) * mantissa).toFixed(2) + "e" + (Math.floor(exponent / 3) * 3)
+  if (type == "built-in") return Intl.NumberFormat("en", {notation: "compact", maximumFractionDigits: 1, minimumFractionDigits: 1}).format(number)
 }
